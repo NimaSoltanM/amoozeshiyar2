@@ -1,6 +1,18 @@
-import { Table } from '@mantine/core';
+import {
+  Button,
+  Group,
+  NumberInput,
+  Paper,
+  Table,
+  TextInput,
+} from '@mantine/core';
+import { useState } from 'react';
 
 const index = () => {
+  const [paidFee, setPaidFee] = useState(1000000);
+  const [wantedFee, setWantedFee] = useState(2000000);
+  const [enteredPrice, setEnteredPrice] = useState(0);
+
   const elements = [
     {
       code: 3991,
@@ -42,19 +54,43 @@ const index = () => {
     </tr>
   ));
 
+  const feeHandler = () => {
+    if (enteredPrice > 2000000 || paidFee >= 3000000) {
+      alert('چه خبره دوست عزیز !?');
+      return;
+    }
+    setPaidFee((paidFee) => (paidFee += +enteredPrice));
+  };
+
   return (
-    <Table striped highlightOnHover>
-      <thead>
-        <tr>
-          <th>کد ترم</th>
-          <th>آخرین وضعیت دانشجو در ترم</th>
-          <th>شهریه ثابت</th>
-          <th>شهریه متغیر</th>
-          <th>جمع شهریه ثابت و متغیر</th>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </Table>
+    <>
+      <Paper p='xl'>
+        <Group>
+          <p>مبلغ پدرداخت شده : {paidFee}</p>
+          <p>مبلغ قابل پرداخت : {wantedFee}</p>
+          <p>وضعیت : {paidFee < wantedFee ? 'بدهکار' : 'بستانکار'}</p>
+        </Group>
+        <Group>
+          <TextInput
+            onChange={(event) => setEnteredPrice(event.target.value)}
+            value={enteredPrice}
+          />
+          <Button onClick={feeHandler}>پرداخت بدهی</Button>
+        </Group>
+      </Paper>
+      <Table striped highlightOnHover>
+        <thead>
+          <tr>
+            <th>کد ترم</th>
+            <th>آخرین وضعیت دانشجو در ترم</th>
+            <th>شهریه ثابت</th>
+            <th>شهریه متغیر</th>
+            <th>جمع شهریه ثابت و متغیر</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    </>
   );
 };
 

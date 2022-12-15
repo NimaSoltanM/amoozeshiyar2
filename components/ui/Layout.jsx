@@ -8,8 +8,6 @@ import {
   Burger,
   useMantineTheme,
   NavLink,
-  Card,
-  Group,
   Avatar,
   Divider,
   Box,
@@ -17,8 +15,16 @@ import {
   ActionIcon,
   Modal,
   Center,
+  Drawer,
+  Stack,
+  Paper,
+  TextInput,
+  PasswordInput,
+  Button,
 } from '@mantine/core';
 import Link from 'next/link';
+import { useForm } from '@mantine/form';
+
 import { useRouter } from 'next/router';
 
 import {
@@ -36,9 +42,37 @@ export default function AppShellDemo({ children }) {
   const [opened, setOpened] = useState(false);
   const router = useRouter();
   const [openedModal, setOpenedModal] = useState(false);
+  const [openedDrawer, setOpenedDrawer] = useState(false);
 
   const clickHandler = () => {
     setOpenedModal(true);
+  };
+
+  const drawerHandler = () => {
+    setOpenedDrawer(true);
+  };
+
+  const form = useForm({
+    initialValues: {
+      code: '',
+      password: '',
+      igapCode: '',
+    },
+
+    validate: {
+      code: (value) =>
+        value === '1234' ? null : 'فقط مقادیر گفته شده را وارد کنید',
+      password: (value) =>
+        value === '1234' ? null : 'فقط مقادیر گفته شده را وارد کنید',
+      igapCode: (value) =>
+        value === 'i1234' ? null : 'فقط مقادیر گفته شده را وارد کنید',
+    },
+  });
+
+  const submitHandler = (values) => {
+    if (form.isValid) {
+      alert('مثلا وارد شدی');
+    }
   };
   return (
     <AppShell
@@ -89,16 +123,6 @@ export default function AppShellDemo({ children }) {
               mb='sm'
             />
           </Link>
-
-          <Box mt='100%' className='user-button'>
-            <Divider mb='md' />
-            <Card py='0'>
-              <Group position='apart'>
-                <Avatar src='/images/avatar.jpg' />
-                <p>حسن روحانی</p>
-              </Group>
-            </Card>
-          </Box>
         </Navbar>
       }
       footer={
@@ -145,7 +169,11 @@ export default function AppShellDemo({ children }) {
                   مشخصات شما
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item icon={<FaSignOutAlt size={14} />} color='red'>
+                <Menu.Item
+                  onClick={drawerHandler}
+                  icon={<FaSignOutAlt size={14} />}
+                  color='red'
+                >
                   خروج
                 </Menu.Item>
               </Menu.Dropdown>
@@ -173,6 +201,53 @@ export default function AppShellDemo({ children }) {
           <p>شماره دانشجویی : 39945541042019</p>
         </Box>
       </Modal>
+
+      <Drawer
+        opened={openedDrawer}
+        onClose={() => setOpenedDrawer(false)}
+        padding='xl'
+        size='100%'
+        closeOnClickOutside={false}
+      >
+        <Box w='100%' height='100%'>
+          <Center>
+            <h1>ورود دوباره</h1>
+          </Center>
+          <Center>
+            <Stack align='center'>
+              <Paper shadow='xl' p='xl'>
+                <form
+                  onSubmit={form.onSubmit((values) => submitHandler(values))}
+                >
+                  <Stack spacing='lg'>
+                    <TextInput
+                      placeholder='1234'
+                      label='کد دانشجویی'
+                      withAsterisk
+                      {...form.getInputProps('code')}
+                    />
+                    <PasswordInput
+                      placeholder='1234'
+                      label='رمز عبور'
+                      withAsterisk
+                      {...form.getInputProps('password')}
+                    />
+                    <TextInput
+                      placeholder='i1234'
+                      label='کد آی گپ'
+                      description='برای اذیت و آزار شما ، کد فرستاده شده به آی گپ را نیز باید وارد کنید.'
+                      withAsterisk
+                      {...form.getInputProps('igapCode')}
+                    />
+
+                    <Button type='submit'>ورود</Button>
+                  </Stack>
+                </form>
+              </Paper>
+            </Stack>
+          </Center>
+        </Box>
+      </Drawer>
     </AppShell>
   );
 }
